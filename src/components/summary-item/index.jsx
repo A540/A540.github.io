@@ -1,5 +1,5 @@
 import { Link } from 'gatsby';
-import React from 'react';
+import React, { useState } from 'react';
 
 const classes = {
   wrapper: 'mb-6',
@@ -9,6 +9,8 @@ const classes = {
 };
 
 const SummaryItem = ({ name, description, link = false, internal = false }) => {
+  const [imageError, setImageError] = useState(false);
+
   let linkContent;
   if (internal) {
     linkContent = <Link to={link}>{name}</Link>;
@@ -16,17 +18,18 @@ const SummaryItem = ({ name, description, link = false, internal = false }) => {
     linkContent = <a href={link}>{name}</a>;
   }
 
-  // 이미지 경로 설정 (static/images/이름.png)
   const imagePath = `/images/${name}.png`;
 
   return (
     <div className={classes.wrapper}>
-      <img
-        src={imagePath}
-        alt={name}
-        className={classes.image}
-        onError={(e) => (e.target.style.display = 'none')}
-      />
+      {!imageError && (
+        <img
+          src={imagePath}
+          alt={name}
+          className={classes.image}
+          onError={() => setImageError(true)}
+        />
+      )}
       <h3
         className={`${classes.name} ${
           link ? 'hover:underline hover:text-black' : ''
@@ -34,12 +37,14 @@ const SummaryItem = ({ name, description, link = false, internal = false }) => {
       >
         {link ? linkContent : name}
       </h3>
-      <p className={classes.description}>{description.split('\n').map((line, index) => (
-        <React.Fragment key={index}>
-          {line}
-          {index !== description.split('\n').length - 1 && <br />}
-        </React.Fragment>
-      ))}</p>
+      <p className={classes.description}>
+        {description.split('\n').map((line, index) => (
+          <React.Fragment key={index}>
+            {line}
+            {index !== description.split('\n').length - 1 && <br />}
+          </React.Fragment>
+        ))}
+      </p>
     </div>
   );
 };
